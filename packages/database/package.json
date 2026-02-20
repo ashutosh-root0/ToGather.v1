@@ -1,7 +1,6 @@
 {
   "name": "@workspace/database",
   "version": "0.0.0",
-
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
