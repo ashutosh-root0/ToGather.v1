@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -16,6 +16,8 @@ import { Label } from "@workspace/ui/components/label"
 import { authClient } from "@workspace/auth/auth-client"
 import { Loader2 } from "lucide-react"
 
+import { toast } from "@workspace/ui/components/sonner"
+
 export default function SignUpPage() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -23,34 +25,54 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const [pendingProvider, setPendingProvider] = useState<string | null>(null)
 
-  const handleCredentialsSignUp = async (e: FormEvent<HTMLFormElement>) => {
+  // FormEvent is deprecated
+  const handleCredentialsSignUp = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLoading(true)
-    try {
-      await authClient.signUp.email({
-        email,
-        password,
-        name,
-        callbackURL: "/dashboard",
-      })
-    } catch (error) {
-      console.error("Sign up failed", error)
-    } finally {
-      setLoading(false)
-    }
+    
+    await authClient.signUp.email({
+      email,
+      password,
+      name,
+      callbackURL: "/dashboard",
+    },
+    {
+      onRequest: () => {
+        setLoading(true)
+      },
+      onResponse: () => {
+        setLoading(false)
+      },
+      onError: (ctx) => {
+        toast.error("Sign up failed. Please try again.")
+        console.log(ctx.error.message)
+      },
+      onSuccess: () => {
+        toast.success("Account created successfully!")
+        window.location.href = "/dashboard"
+      }
+    });
   }
 
   const handleSocialSignUp = async (provider: "github" | "google") => {
     setPendingProvider(provider)
-    try {
-      await authClient.signIn.social({
-        provider,
-        callbackURL: "/dashboard",
-      })
-    } catch (error) {
-      console.error("Social sign up failed", error)
-      setPendingProvider(null)
-    }
+    
+    await authClient.signIn.social({
+      provider,
+      callbackURL: "/dashboard",
+    },
+    {
+      onRequest: () => {},
+      onResponse: () => {
+        setPendingProvider(null)
+      },
+      onError: (ctx) => {
+        toast.error(`Failed to sign up with ${provider}. Please try again.`)
+        console.log(ctx.error.message)
+      },
+      onSuccess: () => {
+        toast.success(`Signed up with ${provider} successfully!`)
+      }
+    });
   }
 
   return (
@@ -118,10 +140,10 @@ export default function SignUpPage() {
           </div>
           <form onSubmit={handleCredentialsSignUp} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Display Name</Label>
               <Input
                 id="name"
-                placeholder="John Doe"
+                placeholder="FatPanda"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -132,7 +154,7 @@ export default function SignUpPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="Demo@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

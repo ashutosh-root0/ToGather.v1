@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { useState, type SubmitEvent } from "react"
 import Link from "next/link"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -16,39 +16,60 @@ import { Label } from "@workspace/ui/components/label"
 import { authClient } from "@workspace/auth/auth-client" 
 import { Loader2 } from "lucide-react" 
 
+import { toast } from "@workspace/ui/components/sonner"
+
 export default function SignInPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [pendingProvider, setPendingProvider] = useState<string | null>(null)
 
-  const handleCredentialsSignIn = async (e: FormEvent<HTMLFormElement>) => {
+  const handleCredentialsSignIn = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLoading(true)
-    try {
-      await authClient.signIn.email({
-        email,
-        password,
-        callbackURL: "/dashboard",
-      })
-    } catch (error) {
-      console.error("Sign in failed", error)
-    } finally {
-      setLoading(false)
-    }
+    
+    await authClient.signIn.email({
+      email,
+      password,
+      callbackURL: "/dashboard",
+    },
+    {
+      onRequest: () => {
+        setLoading(true)
+      },
+      onResponse: () => {
+        setLoading(false)
+      },
+      onError: (ctx) => {
+        toast.error("Sign in failed. Please check your credentials.")
+        console.log(ctx.error.message)
+      },
+      onSuccess: () => {
+        toast.success("Signed in successfully!")
+        window.location.href = "/dashboard" // Added this to match your sign-up flow, assuming you want a redirect!
+      }
+    });
   }
 
   const handleSocialSignIn = async (provider: "github" | "google") => {
     setPendingProvider(provider)
-    try {
-      await authClient.signIn.social({
-        provider,
-        callbackURL: "/dashboard",
-      })
-    } catch (error) {
-      console.error("Social sign in failed", error)
-      setPendingProvider(null)
-    }
+    
+    await authClient.signIn.social({
+      provider,
+      callbackURL: "/dashboard",
+    },
+    {
+      onRequest: () => {},
+      onResponse: () => {
+        setPendingProvider(null)
+      },
+      onError: (ctx) => {
+        toast.error(`Failed to sign in with ${provider}. Please try again.`)
+        console.log(ctx.error.message)
+      },
+      onSuccess: () => {
+        toast.success(`Signed in with ${provider} successfully!`)
+      }
+    });
   }
 
   return (

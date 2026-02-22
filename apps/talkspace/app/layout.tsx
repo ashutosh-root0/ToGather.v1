@@ -6,6 +6,7 @@ const font = Open_Sans({subsets : ['latin']})
 
 import "@workspace/ui/globals.css"
 import { Providers } from "@/components/providers"
+import { Toaster } from "@workspace/ui/components/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>{children}</Providers>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );
