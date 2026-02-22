@@ -15,10 +15,12 @@ import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { authClient } from "@workspace/auth/auth-client" 
 import { Loader2 } from "lucide-react" 
-
+import { ReturnButton } from "@/components/return-button"
 import { toast } from "@workspace/ui/components/sonner"
+import { useRouter } from "next/navigation"
 
 export default function SignInPage() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -45,7 +47,9 @@ export default function SignInPage() {
       },
       onSuccess: () => {
         toast.success("Signed in successfully!")
-        window.location.href = "/dashboard" // Added this to match your sign-up flow, assuming you want a redirect!
+        router.push("/dashboard")
+        // TODODO Should I use Callback url or this????
+
       }
     });
   }
@@ -68,20 +72,63 @@ export default function SignInPage() {
       },
       onSuccess: () => {
         toast.success(`Signed in with ${provider} successfully!`)
+        router.push("/dashboard")
+        // TODODO Should I use Callback url or this????
       }
     });
   }
 
   return (
+    <>
+    <div className="relative min-h-svh">
+    
+    {/* Top-left Return Button */}
+    <div className="absolute top-4 left-4">
+      <ReturnButton href="/" label="Back to home" />
+    </div>
     <div className="flex items-center justify-center min-h-svh p-4">
-      <Card className="w-full max-w-md">
+      <Card className="relative w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
-          <CardDescription>
-            Choose your preferred sign in method
-          </CardDescription>
+          <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
+                    <form onSubmit={handleCredentialsSignIn} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button className="w-full" type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sign In
+            </Button>
+          </form>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <Button
               variant="outline"
@@ -125,43 +172,6 @@ export default function SignInPage() {
               Google
             </Button>
           </div>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div>
-          <form onSubmit={handleCredentialsSignIn} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button className="w-full" type="submit" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign In
-            </Button>
-          </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
@@ -173,5 +183,7 @@ export default function SignInPage() {
         </CardFooter>
       </Card>
     </div>
+    </div>
+    </>
   )
 }

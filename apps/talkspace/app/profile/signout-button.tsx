@@ -23,6 +23,6 @@ export const SignOutButton = () => {
         })
     }
     return (
-        <Button onClick={handleClick} size="sm" variant="destructive">Sign out</Button>
+        <Button onClick={handleClick} size="sm" variant="destructive">Sign Out</Button>
     )
 }
