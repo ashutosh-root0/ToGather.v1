@@ -21,6 +21,12 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
     }, 
   }, 
+  account: {
+   accountLinking : {
+    // Changed this to true to allow account linking (Default Value was true as well)
+    enabled : true,
+   },
+  },
 });
 
 /*
