@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 
 import { prisma } from "@workspace/database";
+import { sendEmailAction } from "./send-email.action.js";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -10,7 +11,30 @@ export const auth = betterAuth({
     emailAndPassword: { 
     enabled: true, 
     autoSignIn: false,
+    requireEmailVerification: true,
   }, 
+  emailVerification:{
+    sendOnSignUp: true,
+    expiresIn: 60*60,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail : async({ user, url}) => {
+      
+      console.log('url before changing', url);
+      const link = new URL(url);
+      link.searchParams.set("callbackURL", "/auth/verify");
+      console.log('url after changing', link);
+
+      await sendEmailAction({
+        to: user.email,
+        subject: "Verify your Email Address",
+        meta: {
+          description : "Please Verify your email address to complete your registeration.",
+          link: String(link),
+        }
+      })
+      
+    }
+  },
   socialProviders: { 
     github: { 
       clientId: process.env.GITHUB_CLIENT_ID as string, 

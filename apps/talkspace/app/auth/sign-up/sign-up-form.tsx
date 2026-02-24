@@ -47,7 +47,7 @@ export function SignUpForm() {
       },
       onSuccess: () => {
         toast.success("Account created successfully!")
-        router.push("/dashboard")
+        router.push("/auth/verify")
         // TODODO Should I use Callback url or this????
       }
     });
