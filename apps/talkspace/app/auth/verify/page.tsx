@@ -1,11 +1,6 @@
-"use client"
- 
-import { useEffect, useState } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import { ReturnButton } from "@/components/return-button"
+import Link from "next/link"
 import { Button } from "@workspace/ui/components/button"
 import { Alert, AlertTitle, AlertDescription } from "@workspace/ui/components/alert"
-
 import {
   Card,
   CardContent,
@@ -14,32 +9,31 @@ import {
   CardDescription,
   CardFooter,
 } from "@workspace/ui/components/card"
-import { Mail, CheckCircle, AlertCircle, RefreshCw, MailCheck, ArrowLeft } from "lucide-react"
-import Link from "next/link"
- 
-type VerificationStatus = "loading" | "success" | "error" | "expired" | "invalid"
+import { MailCheck, AlertCircle, ArrowLeft } from "lucide-react"
 
+import { ResendEmailForm } from "./resend-email-verification"
+
+// Next.js 16 strictly types searchParams as a Promise
 interface VerifyPageProps {
-  // In Next.js 16, searchParams is strictly a Promise
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export default async function VerifyPage({ searchParams }: VerifyPageProps) {
-  // Await the parameters before using them
-  const resolvedParams = await searchParams;
-  const error = resolvedParams.error as string;
+  // Await the params to read the error query directly on the server
+  const resolvedParams = await searchParams
+  const error = resolvedParams.error as string | undefined
 
   // Better Auth specific error mappings
   const getErrorMessage = (errorCode: string) => {
     switch (errorCode) {
       case "token_expired":
-        return "Your verification link has expired. Please log in to request a new one.";
+        return "Your verification link has expired. Please request a new one below."
       case "invalid_token":
-        return "The verification token is invalid, malformed, or has already been used.";
+        return "The verification token is invalid, malformed, or has already been used. Please request a new link."
       default:
-        return "An unknown error occurred during email verification. Please try again.";
+        return "An unknown error occurred during email verification. Please try requesting a new link."
     }
-  };
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
@@ -62,9 +56,9 @@ export default async function VerifyPage({ searchParams }: VerifyPageProps) {
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="space-y-6">
           {error ? (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>{getErrorMessage(error)}</AlertDescription>
@@ -75,28 +69,28 @@ export default async function VerifyPage({ searchParams }: VerifyPageProps) {
                 Please click the link in the email to verify your account. You will
                 be automatically redirected to your dashboard once verified.
               </p>
-              <p>
-                If you don't see it, be sure to check your spam folder.
-              </p>
+              <p>If you don't see it, be sure to check your spam folder.</p>
             </div>
           )}
+
+          {/* Render the Client Component form here */}
+          <div className="border-t pt-6">
+            <h3 className="text-sm font-medium mb-4 text-center">
+              {error ? "Request a new verification link" : ""}
+            </h3>
+            <ResendEmailForm />
+          </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col space-y-2">
-          {error ? (
-            <Button asChild className="w-full">
-              <Link href="/auth/login">Back to Login</Link>
-            </Button>
-          ) : (
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/auth/login">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Return to Login
-              </Link>
-            </Button>
-          )}
+        <CardFooter>
+          <Button asChild variant="ghost" className="w-full">
+            <Link href="/auth/sign-up">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to SignUp
+            </Link>
+          </Button>
         </CardFooter>
       </Card>
     </div>
-  );
+  )
 }
