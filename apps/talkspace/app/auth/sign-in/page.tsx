@@ -1,4 +1,4 @@
-import { ReturnButton } from "@/components/return-button"
+import { ReturnButton } from "@/app/auth/return-button"
 import { SignInForm } from "./sign-in-form"
 
 export default function SignInPage() {

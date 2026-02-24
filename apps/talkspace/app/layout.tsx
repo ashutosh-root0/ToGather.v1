@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Open_Sans } from "next/font/google";
 import "./globals.css";
+import {cn} from '@workspace/ui/lib/utils'
 
 const font = Open_Sans({subsets : ['latin']})
 
 import "@workspace/ui/globals.css"
-import { Providers } from "@/components/providers"
+import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@workspace/ui/components/sonner";
 
 const geistSans = Geist({
@@ -30,10 +31,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Providers>{children}</Providers>
+      <body className={cn(
+        font.className,
+        "bg-white dark:bg-[#313338]"
+        )}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          storageKey="talkspace-theme"
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
         <Toaster position="top-right" richColors />
       </body>
     </html>
