@@ -14,6 +14,14 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/auth/sign-in", request.url));
     }
 
+    const { pathname } = request.nextUrl;
+
+    // Handle Public Routes (like UploadThing)
+    // We explicitly allow this so the UploadThing callback works
+    if (pathname.startsWith("/api/uploadthing")) {
+        return NextResponse.next();
+    }
+
     return NextResponse.next();
 }
 
