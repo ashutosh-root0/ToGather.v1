@@ -8,6 +8,7 @@ const font = Open_Sans({subsets : ['latin']})
 import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@workspace/ui/components/sonner";
+import { ModalProvider } from "@/components/providers/modal-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
           storageKey="talkspace-theme"
           disableTransitionOnChange
         >
+          <ModalProvider/>
           {children}
         </ThemeProvider>
         <Toaster position="top-right" richColors />
