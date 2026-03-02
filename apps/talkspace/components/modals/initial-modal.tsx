@@ -93,7 +93,7 @@ export const InitialModal = () => {
                                         id={field.name}
                                         aria-invalid={fieldState.invalid}
                                         disabled={isLoading}
-                                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                                        className="bg-zinc-100/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
                                         placeholder="Enter server name"
                                     />
                                     
@@ -102,7 +102,7 @@ export const InitialModal = () => {
                             )}
                         />
                     </div>
-                    <DialogFooter className="bg-gray-100 px-6 py-4">
+                    <DialogFooter className="bg-gray-100 px-6 py-6">
                         <Button variant="primary" disabled={isLoading}>
                             Create
                         </Button>

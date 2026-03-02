@@ -124,4 +124,15 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* * Bulletproof Dialog Centering
+   * Prevents v4 animation plugins from overriding the positioning 
+   * by using modern CSS `translate` mapped independently from `transform`.
+   */
+  [data-slot="dialog-content"] {
+    top: 50% !important;
+    left: 50% !important;
+    translate: -50% -50% !important;
+    margin: 0 !important;
+  }
 }
