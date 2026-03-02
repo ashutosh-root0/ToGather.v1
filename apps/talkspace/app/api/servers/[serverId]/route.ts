@@ -1,0 +1,1 @@
+// Renders the current server which the user is in
