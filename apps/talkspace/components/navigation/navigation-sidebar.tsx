@@ -13,7 +13,8 @@ export const NavigationSidebar = async() =>{
     const profile = await currentProfile();
 
     if(!profile){
-        return redirect("/");
+        console.log("No Profile")
+        return redirect("/auth/sign-in");
     }
 
     const servers = await prisma.server.findMany({

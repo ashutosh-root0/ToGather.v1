@@ -31,10 +31,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="h-full">
       <body className={cn(
         font.className,
-        "bg-white dark:bg-[#313338]"
+        "bg-white dark:bg-[#313338] h-full"
         )}>
         <ThemeProvider
           attribute="class"
